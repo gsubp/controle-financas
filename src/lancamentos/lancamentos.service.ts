@@ -31,10 +31,7 @@ function validarCategoria(tipo: TipoLancamento, categoria: string): void {
   if (!CATEGORIAS[tipo].includes(categoria)) throw new BadRequestException('Categoria inválida para o tipo');
 }
 
-function paraBanco<T extends { data?: string }>(dto: T) {
-  const { data, ...campos } = dto;
-  return { ...campos, data: data === undefined ? undefined : new Date(data + 'T00:00:00Z') };
-}
+const paraDate = (data: string) => new Date(data + 'T00:00:00Z');
 
 const naoEncontrado = () => new NotFoundException('Lançamento não encontrado');
 
@@ -59,14 +56,23 @@ export class LancamentosService {
 
   async criar(usuarioId: string, dto: CriarLancamentoDto): Promise<LancamentoResposta> {
     validarCategoria(dto.tipo, dto.categoria);
-    return paraResposta(await this.prisma.lancamento.create({ data: { ...paraBanco(dto), usuarioId } }));
+    const { data, ...campos } = dto;
+    return paraResposta(
+      await this.prisma.lancamento.create({ data: { ...campos, data: paraDate(data), usuarioId } }),
+    );
   }
 
   async atualizar(usuarioId: string, id: string, dto: AtualizarLancamentoDto): Promise<LancamentoResposta> {
     const atual = await this.prisma.lancamento.findFirst({ where: { id, usuarioId } });
     if (!atual) throw naoEncontrado();
     validarCategoria(dto.tipo ?? atual.tipo, dto.categoria ?? atual.categoria);
-    return paraResposta(await this.prisma.lancamento.update({ where: { id, usuarioId }, data: paraBanco(dto) }));
+    const { data, ...campos } = dto;
+    return paraResposta(
+      await this.prisma.lancamento.update({
+        where: { id, usuarioId },
+        data: { ...campos, ...(data !== undefined && { data: paraDate(data) }) },
+      }),
+    );
   }
 
   async remover(usuarioId: string, id: string): Promise<void> {
