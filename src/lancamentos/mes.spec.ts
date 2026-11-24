@@ -1,6 +1,15 @@
-import { intervaloDoMes, paraData, somarMeses } from './mes.js';
+import { dataValida, intervaloDoMes, MES_REGEX, paraData, somarMeses } from './mes.js';
 
 describe('mes', () => {
+  it('aceita só anos 1900–2099 (ano de 2 dígitos no input date vira 00xx)', () => {
+    expect(dataValida('2026-11-23')).toBe(true);
+    expect(dataValida('0026-11-23')).toBe(false);
+    expect(dataValida('0000-01-01')).toBe(false);
+    expect(MES_REGEX.test('2026-11')).toBe(true);
+    expect(MES_REGEX.test('0026-11')).toBe(false);
+    expect(MES_REGEX.test('9999-12')).toBe(false);
+  });
+
   it('intervalo do mês em UTC, com fim exclusivo', () => {
     const { inicio, fim } = intervaloDoMes('2026-11');
     expect(inicio.toISOString()).toBe('2026-11-01T00:00:00.000Z');
