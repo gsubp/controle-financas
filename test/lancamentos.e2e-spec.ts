@@ -106,11 +106,15 @@ describe('lançamentos (e2e)', () => {
       { ...SUPERMERCADO, valorCentavos: 10.5 },
       { ...SUPERMERCADO, valorCentavos: 2000000001 },
       { ...SUPERMERCADO, data: '2026-02-30' },
+      { ...SUPERMERCADO, data: '0026-11-23' },
+      { ...SUPERMERCADO, data: '0000-01-01' },
       { ...SUPERMERCADO, usuarioId: usuarioB.id },
     ];
     for (const corpo of invalidos) {
       await comoA(http().post('/lancamentos')).send(corpo).expect(400);
     }
+    await comoA(http().get('/lancamentos?mes=0026-11')).expect(400);
+    await comoA(http().get('/lancamentos?mes=9999-12')).expect(400);
     await comoA(http().get('/lancamentos?mes=2026-13')).expect(400);
     await comoA(http().get('/lancamentos')).expect(400);
   });

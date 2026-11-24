@@ -1,4 +1,5 @@
-export const MES_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
+// Anos 1900–2099: um ano de 2 dígitos no <input type="date"> vira 00xx, que Date.UTC lê como 19xx.
+export const MES_REGEX = /^(19|20)\d{2}-(0[1-9]|1[0-2])$/;
 
 function inicioDoMes(mes: string): Date {
   const [ano, m] = mes.split('-').map(Number);
@@ -22,7 +23,7 @@ export function paraData(d: Date): string {
 
 /** `YYYY-MM-DD` que existe no calendário (recusa 2026-02-30). */
 export function dataValida(v: unknown): boolean {
-  if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+  if (typeof v !== 'string' || !/^(19|20)\d{2}-\d{2}-\d{2}$/.test(v)) return false;
   const d = new Date(v + 'T00:00:00Z');
   return !Number.isNaN(d.getTime()) && paraData(d) === v;
 }
