@@ -19,3 +19,10 @@ export function intervaloDoMes(mes: string): { inicio: Date; fim: Date } {
 export function paraData(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
+
+/** `YYYY-MM-DD` que existe no calendário (recusa 2026-02-30). */
+export function dataValida(v: unknown): boolean {
+  if (typeof v !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+  const d = new Date(v + 'T00:00:00Z');
+  return !Number.isNaN(d.getTime()) && paraData(d) === v;
+}
