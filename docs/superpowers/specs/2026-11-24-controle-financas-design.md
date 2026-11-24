@@ -202,8 +202,10 @@ Tela estreita: cards empilham, cabeçalho quebra linha, tabela rola na horizonta
   ao GitHub, que está vazio.
 - Em ambos: `git flow init` com `main`/`develop`, prefixos padrão (`feature/`, `release/`, `hotfix/`),
   tag com prefixo `v`. `develop` publicado no GitHub.
-- Cada etapa é uma feature (`git flow feature start`), com commits pequenos, PR para `develop` aberto pela
-  skill `abrir-pr`, revisão de código, merge (merge commit) quando os testes passam, branch apagada.
+- Cada etapa é uma feature (`git flow feature start`), com commits pequenos, PR para `develop` aberto com
+  `gh pr create` (descrição em português: O que foi feito / Por quê / Como testar), revisão de código, merge
+  (merge commit) quando os testes passam, branch apagada. A skill `abrir-pr` não se aplica: é do fluxo
+  Cargozilla (prefixo de card, link do Jira e trava que bloqueia contas pessoais).
 - **O construtor revisa e faz o merge dos próprios PRs e fecha o release** (envia `main` e tags) sem parar para
   aprovação — decisão do usuário. O usuário revisa no GitHub quando quiser.
 - Features — backend: `setup`, `auth`, `lancamentos`, `resumo`; frontend: `setup`, `auth`, `lancamentos`, `dashboard`.
