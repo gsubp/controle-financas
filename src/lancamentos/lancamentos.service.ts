@@ -32,7 +32,8 @@ function validarCategoria(tipo: TipoLancamento, categoria: string): void {
 }
 
 function paraBanco<T extends { data?: string }>(dto: T) {
-  return { ...dto, data: dto.data === undefined ? undefined : new Date(dto.data + 'T00:00:00Z') };
+  const { data, ...campos } = dto;
+  return { ...campos, data: data === undefined ? undefined : new Date(data + 'T00:00:00Z') };
 }
 
 const naoEncontrado = () => new NotFoundException('Lançamento não encontrado');
