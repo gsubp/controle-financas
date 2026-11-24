@@ -42,7 +42,7 @@ export class AuthService {
 
   async me(usuarioId: string): Promise<UsuarioPublico> {
     const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId }, select: PUBLICO });
-    if (!usuario) throw new UnauthorizedException();
+    if (!usuario) throw new UnauthorizedException('Não autenticado');
     return usuario;
   }
 

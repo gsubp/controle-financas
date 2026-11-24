@@ -39,6 +39,21 @@ describe('auth (e2e)', () => {
     await http().post('/auth/cadastro').send({ nome: 'Ana', email, senha: SENHA_TESTE, admin: true }).expect(400);
   });
 
+  it('responde erros de formulário em português', async () => {
+    const email = `teste-${randomUUID()}@exemplo.com`;
+    const semNome = await http().post('/auth/cadastro').send({ nome: '   ', email, senha: SENHA_TESTE }).expect(400);
+    expect(semNome.body.message).toEqual(['Informe o nome (até 100 caracteres)']);
+
+    const vazio = await http().post('/auth/login').send({ email: '', senha: '' }).expect(400);
+    expect(vazio.body.message).toEqual(['Informe o e-mail', 'Informe a senha']);
+
+    const longa = await http().post('/auth/login').send({ email, senha: 'x'.repeat(73) }).expect(400);
+    expect(longa.body.message).toEqual(['A senha deve ter no máximo 72 caracteres']);
+
+    const semToken = await http().get('/auth/me').expect(401);
+    expect(semToken.body.message).toBe('Não autenticado');
+  });
+
   it('faz login com e-mail em maiúsculas e espaços', async () => {
     const { usuario } = await cadastrar(app);
     const res = await http()

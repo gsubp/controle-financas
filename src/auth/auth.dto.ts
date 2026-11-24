@@ -8,7 +8,7 @@ const aparar = ({ value }: { value: unknown }) => (typeof value === 'string' ? v
 export class CadastroDto {
   @Transform(aparar)
   @IsString()
-  @Length(1, 100)
+  @Length(1, 100, { message: 'Informe o nome (até 100 caracteres)' })
   nome: string;
 
   @Transform(normalizarEmail)
@@ -23,11 +23,11 @@ export class CadastroDto {
 export class LoginDto {
   @Transform(normalizarEmail)
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Informe o e-mail' })
   email: string;
 
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(72)
+  @IsNotEmpty({ message: 'Informe a senha' })
+  @MaxLength(72, { message: 'A senha deve ter no máximo 72 caracteres' })
   senha: string;
 }

@@ -16,14 +16,14 @@ export class AuthGuard implements CanActivate {
 
     const req = ctx.switchToHttp().getRequest<RequisicaoAutenticada>();
     const [esquema, token] = req.headers.authorization?.split(' ') ?? [];
-    if (esquema !== 'Bearer' || !token) throw new UnauthorizedException();
+    if (esquema !== 'Bearer' || !token) throw new UnauthorizedException('Não autenticado');
 
     try {
       const payload = await this.jwt.verifyAsync<{ sub: string }>(token);
       req.usuarioId = payload.sub;
       return true;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Não autenticado');
     }
   }
 }
