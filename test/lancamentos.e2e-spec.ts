@@ -14,6 +14,7 @@ describe('lançamentos (e2e)', () => {
   let app: INestApplication;
   let tokenA: string;
   let tokenB: string;
+  let idB: string;
   const http = () => request(app.getHttpServer());
   const comoA = (r: request.Test) => r.set('Authorization', `Bearer ${tokenA}`);
   const comoB = (r: request.Test) => r.set('Authorization', `Bearer ${tokenB}`);
@@ -22,7 +23,9 @@ describe('lançamentos (e2e)', () => {
   beforeAll(async () => {
     app = await criarApp();
     tokenA = (await cadastrar(app)).token;
-    tokenB = (await cadastrar(app)).token;
+    const b = await cadastrar(app);
+    tokenB = b.token;
+    idB = b.usuario.id;
   });
 
   afterAll(async () => {
@@ -79,6 +82,20 @@ describe('lançamentos (e2e)', () => {
 
     const aindaDeA = await comoA(http().get(`/lancamentos/${deA.id}`)).expect(200);
     expect(aindaDeA.body.valorCentavos).toBe(SUPERMERCADO.valorCentavos);
+  });
+
+  it('não deixa o PATCH mover o lançamento para outro usuário', async () => {
+    const deA = await criarComoA(SUPERMERCADO);
+    await comoA(http().patch(`/lancamentos/${deA.id}`)).send({ usuarioId: idB }).expect(400);
+    await comoB(http().get(`/lancamentos/${deA.id}`)).expect(404);
+    await comoA(http().get(`/lancamentos/${deA.id}`)).expect(200);
+  });
+
+  it('recusa campos nulos no PATCH com 400', async () => {
+    const criado = await criarComoA(SUPERMERCADO);
+    for (const campo of ['tipo', 'descricao', 'categoria', 'valorCentavos', 'data']) {
+      await comoA(http().patch(`/lancamentos/${criado.id}`)).send({ [campo]: null }).expect(400);
+    }
   });
 
   it('valida o corpo e o mês', async () => {

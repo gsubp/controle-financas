@@ -33,4 +33,5 @@ export class CriarLancamentoDto {
   data: string;
 }
 
-export class AtualizarLancamentoDto extends PartialType(CriarLancamentoDto) {}
+// skipNullProperties: false → `null` é validado (e recusado) em vez de chegar ao Prisma como 500.
+export class AtualizarLancamentoDto extends PartialType(CriarLancamentoDto, { skipNullProperties: false }) {}
