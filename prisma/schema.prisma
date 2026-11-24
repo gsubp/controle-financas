@@ -1,0 +1,39 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id          String       @id @default(uuid())
+  nome        String
+  email       String       @unique
+  senhaHash   String
+  criadoEm    DateTime     @default(now())
+  lancamentos Lancamento[]
+}
+
+enum TipoLancamento {
+  RECEITA
+  DESPESA
+}
+
+model Lancamento {
+  id            String         @id @default(uuid())
+  usuarioId     String
+  usuario       Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tipo          TipoLancamento
+  descricao     String
+  categoria     String
+  valorCentavos Int // sempre > 0; o sinal vem do tipo
+  data          DateTime       @db.Date
+  criadoEm      DateTime       @default(now())
+  atualizadoEm  DateTime       @updatedAt
+
+  @@index([usuarioId, data])
+}
